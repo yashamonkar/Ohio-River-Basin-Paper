@@ -15,7 +15,7 @@ get_max_wateryear_streamflow(lat_min=35,
                    lon_max=-78, 
                    drain_area=5791*0.25,
                    start_date= "1934-10-01",
-                   end_date = "2019-09-30",
+                   end_date = "2021-09-30",
                    missing_data = 0.01 #Percent
 )
 dev.off()

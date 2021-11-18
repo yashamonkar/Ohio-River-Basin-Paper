@@ -1,4 +1,13 @@
-#Function to get the data from Data-Retrival and to transform it
+#--------------------------------------------------------------------------------#
+#Function 
+#1. Download data from DataRetrieval Pacakge (https://cran.r-project.org/web/packages/dataRetrieval/vignettes/dataRetrieval.html)
+#2. Subset to the Ohio River Basin
+#3. Convert to Ann-Max Values.
+
+###Input
+
+
+###Output
 
 #Input:- Lat-Lon Boxes. 
 #2. Drainage Area
