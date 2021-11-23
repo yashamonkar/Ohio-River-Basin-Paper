@@ -1,56 +1,201 @@
-setwd("~/Correlated Risk Analysis/Decadal Influences/PC-Wavelets")
+#________________________________________________________________________________#
+###Code for PC-Wavelet Plots
+#To get the PC-Wavelet Plots for the annual maximum data
 
-#The objective is to just include the PC Wavelet Method here for the given data. 
-#The Data can be either 39 years old or 81 years. generic plotting device. 
 
 
-#####Loading the libraries######
+
+
+#________________________________________________________________________________#
+#Set-up Directory
+setwd("~/GitHub/Ohio-River-Basin-Paper")
+
+#Load Dependencies
 library(dplyr)
-library(dams)
 library(NbClust)
+library(biwavelet)
+library(plotrix)
+library(maps)
+library(cowplot)
 
 
+
+#________________________________________________________________________________#
 ####Reading the Data####
-input_data <- read.table("data/Max_Annual_Streamflow.txt", sep="", header = TRUE)
+
+#Read the Annual Maximum Data
+input_data <- read.table("data/Annual_Maximum_Streamflow.txt", 
+                         sep="", header = TRUE)
+
+#Read the Site Information
 site_info <- read.table("data/site_information.txt", sep="", header = TRUE)
 
 
+#Data Cleaning
+Years <- input_data$Year
+input_data$Year <- NULL
+
+
+#________________________________________________________________________________#
+####Functions to compute the PC-Wavelets
+
+###Input
+#1. Data Frame of the Annual Maximum values(Dat)
+#2. Number of PCs to be analyzed (npcs)
+#3. Lat-Lon coordinates of the Sites (coord)
+#4. Years (yrs)
+
+Dat <- input_data
+npcs <- 3
+site_loc <- data.frame(Lat = site_info$dec_lat_va, 
+                       Lon = site_info$dec_long_va)
+yrs <- Years
+
+#________________________________________________________________________________#
+
 #####PCwav Function#####
 PCwav=function(x,npcs,coords,nam,yr1){
-  par(mfrow = c(1,1));
-  par(mar = c(2, 4, 4, 2));
-  #npcs is number of pcs to look at, x is the data matrix (time*spatial locs), 
-  #coords are lat long coords as a data frame and need to be in coords$Lon and coords$Lat
-  #if maps are not desired then please modify this code to drop that part
-  #if maps outside the USA are desired then modify the map function below
-  #name is a character string that gives the name of the series being analyzed
-  #yr1 is the start year of the data
-  x=as.matrix(x)
-  #did above just in case user sends a data frame 
-  #unfortunately not checking to see if the first column is index or time
-  nr=nrow(x)
-  nc=ncol(x)
-  cx=cor(x)
-  yr2=yr1+nr-1
-  library("biwavelet")
-  library("plotrix")
-  library("maps")
   
-  # supplying correlation matrix to the princomp so that nr<nc case does not lead to a problem
-  pcs=prcomp(input_data, scale = TRUE)
+  #Load Dependencies
+  require("biwavelet")
+  require("plotrix")
+  require("maps")
+  
+  #Load the Map Parameters
+  world <- map_data("world")
+  us <- map_data("state")
+
+  #Set up data parameters
+  Dat=as.matrix(Dat)
+  nr=nrow(Dat)
+  nc=ncol(Dat)
+  cx=cor(Dat)
+
+  #Principal Component Analysis(PCA)
+  #supplying correlation matrix to the princomp so that nr<nc case does not lead to a problem
+  pcs=prcomp(Dat, scale = TRUE)
   var <- cumsum(pcs$sdev^2)
-  par(mar=c(4,4,3,0.5))
-  plot(var/max(var), main = "Variance explained by the PC's",
-       ylab = "Variance Explained", xlab = "Number of PC's")
-  abline(v=npcs, lty = 2)
-  text(x=npcs+10, y = var[npcs]/max(var), paste0("Variance Explained is ", 100*round(var[npcs]/max(var),2),"%"),  cex = 0.8 )
-  #now process and plot the PCs for this data set
+  
+  pc_var <- data.frame(NP = 1:length(var),
+                            Var = var/max(var))
+  
+  pvar <- ggplot(pc_var) +
+    geom_point(aes(x = NP, y = Var)) +
+    geom_line(aes(x = NP, y = Var)) +
+    geom_vline(xintercept = 3, linetype = 'dashed') +
+    scale_x_continuous(name = "Number of PCs") +
+    annotate("text", x = 12, y = var[3]/max(var), 
+             label = paste0("Variance explained by 3 PCs - ",
+                            100*round(var[3]/max(var),2),"%")) +
+    scale_y_continuous(name = "Variance Explained") +
+    labs(title = "Variance explained by the PCs") + 
+    theme_bw() +
+    theme(plot.title = element_text(size=15),
+          axis.text=element_text(size=10),
+          axis.title=element_text(size=10)) 
+  print(pvar)
+  
+  pdf("Trial.pdf")
+  #--------------------------------------------------------------------------------#
+  #PC-Wavelet Analysis
   for(i in 1:npcs){
-    p=pcs$x[,i]
-    wlt=wavelet(p)
-    Cw=CI(0.9,p,"w")
-    C=CI(0.9,p,"r")
-    #above gets global wavelet white and red noise conf limts
+    
+    #Get the PC
+    pc=pcs$x[,i]
+    
+    #--------------------------------------------------------------------------------#
+    #Plot the PC-Score
+    plt_dataset <- data.frame(PC = pc,
+                              Year = yrs,
+                              Loess = lowess(yrs,pc,f=1/9)$y)
+    p1 <- ggplot(plt_dataset) +
+      geom_line(aes(x = Year, y = Loess), size = 1.2, color ='red') +
+      geom_point(aes(x = Year, y = PC), size = 0.1) +
+      geom_line(aes(x = Year, y = PC), size = 0.1) +
+      scale_x_continuous(name = "Year") +
+      scale_y_continuous(name = "PC-Score") +
+      labs(title = paste0("PC-",i," Score")) + 
+      theme_bw() +
+      theme(plot.title = element_text(size=12),
+            axis.text=element_text(size=5),
+            axis.title=element_text(size=10)) 
+    
+    #--------------------------------------------------------------------------------#
+    #Plot the PC Eigenvectors
+    eigen_mean <- mean(pcs$rotation[,i])
+    eigen_min <- min(pcs$rotation[,i])
+    eigen_max <- max(pcs$rotation[,i])
+    
+    
+    p2 <- ggplot() +
+      geom_map(data=us, map=us,
+               aes(x=long, y=lat, map_id=region),
+               fill="#D3D3D3", color="#000000", size=0.15) +
+      scale_x_continuous(name = "lon", limits = c(-91, -78)) +
+      scale_y_continuous(name = "lat", limits = c(36.5, 43)) +
+      geom_point(data = site_loc, aes(x= Lon, y = Lat, 
+                                     color = pcs$rotation[,i])) +
+      scale_color_gradient2(low="blue", high="red") +
+      labs(title = paste0("PC-",i," Eigenvectors")) + 
+      labs(color="Eigenvectors")  +
+      theme_bw() +
+      theme(legend.text=element_text(size=7),
+            legend.title=element_text(size=5),
+            axis.text=element_text(size=0),
+            axis.title=element_text(size=0),
+            axis.ticks = element_blank(),
+            plot.title = element_text(size=12),
+            legend.key.height  = unit(0.75, "cm"))
+    
+    
+    #Wavelet Analysis 
+    wlt=wavelet(pc)
+    Cw=CI(0.9,pc,"w")
+    C=CI(0.9,pc,"r")
+    
+    #--------------------------------------------------------------------------------#
+    #Global Wavelet Spectrum
+    plt_dataset <- data.frame(Period = wlt$period,
+                              Power = wlt$p.avg,
+                              W_noise = Cw$sig,
+                              R_noise = C$sig)
+    
+    p3 <- ggplot(plt_dataset) +
+      geom_point(aes(x = Power, y = Period)) +
+      geom_path(aes(x = Power, y = Period)) +
+      geom_line(aes(x = W_noise, y = Period)) +
+      geom_line(aes(x = R_noise, y = Period), color ='red') +
+      ggtitle("Global Wavelet Spectrum") + 
+      scale_x_continuous(name = "Variance") +
+      scale_y_continuous(name = "Period (Years)",
+                         limits = c(0, 30)) +
+      theme_bw() +
+      theme(legend.text=element_text(size=15),
+            legend.title=element_text(size=0),
+            axis.text=element_text(size=10),
+            axis.title=element_text(size=10),
+            plot.title = element_text(size=12))
+    
+    #Wavelet Power Spectrum
+    wt1=wt(cbind(Years,pc))
+    x <- wt1
+    
+    
+    print(plot_grid(p1,p2,p3,
+              nrow = 2,
+              labels = c("A", "B", "C"),
+              label_size = 12))
+    
+  }
+  dev.off()  
+    
+    #--------------------------------------------------------------------------------#
+    #Plotting the Wavelet Power Spectrum - Continuous Wavelet Transform
+    wt1=wt(cbind(Years,pc))
+    
+    
+    
+    
     nam1=paste("PC",as.character(i),nam)
     nam2=paste("Wavelet -PC",as.character(i))
     par(mfrow=c(2,2));
@@ -297,8 +442,8 @@ npcs <- 3
 coords <- as.data.frame(cbind(site_info$dec_lat_va,site_info$dec_long_va))
 colnames(coords) <- c("lat","lon")
 nam <- c("Ann_Max")
-yr1 <- 1937
+yr1 <- 1934
 
-pdf(file = 'plots/PcWav Plots.pdf')
+#pdf(file = 'plots/PcWav Plots.pdf')
 PCwav(x=x, npcs = npcs, coords = coords, nam = nam, yr1=yr1 )
-dev.off()
+#dev.off()
