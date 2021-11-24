@@ -13,7 +13,7 @@
 
 
 #______________________________________________________________________#
-get_power_spectrum <- function(){
+get_power_spectrum <- function(x){
   
   ###Color Scheme
   fill.cols <- c("#00007F", "blue", "#007FFF",
@@ -117,84 +117,19 @@ get_power_spectrum <- function(){
     geom_polygon(plt_polygon, mapping = aes(x=x,y=y), fill = 'black',  alpha = 0.15) +
     geom_contour(plt_signif, mapping = aes(x=x,y=y,z=z), bins = 3,
                  size = 2, color ='black') +
-    scale_x_continuous(name = "Time") +
-    scale_y_reverse(name = "Period", labels = scales::label_math(2^.x)) +
+    scale_x_continuous(name = "Time", limits = c(xlim), expand = c(0, 0)) +
+    scale_y_reverse(name = "Period (Years)", labels = scales::label_math(2^.x),
+                    expand = c(0, 0)) +
     ggtitle("Wavelet Power Spectrum") + 
+    theme_bw()+
     theme(legend.position = 'none',
           axis.text=element_text(size=10),
           axis.title=element_text(size=10),
           plot.title = element_text(size=12)) 
   
-  ps
+ out = list(ps=ps,xlim=xlim,ylim=ylim)
   
   
   
 }
-
-
-
-zvals_t <- t(zvals)
-
-#Plotting Dataset
-plt_dataset <- data.frame(Xt = rep(x$t, length(yvals)),
-                          Yvals = rep(yvals, each = length(x$t)),
-                          Zval = c(t(zvals)))
-
-#Cone of Influence
-plt_polygon <- data.frame(x = c(x$t, 
-                                rev(x$t), x$t[1]),
-                          y = c(log2(x$coi), 
-                                rep(max(c(log2(x$coi), log2(x$period)), na.rm = TRUE),length(x$coi)),
-                                log2(x$coi[1])))
-
-for(j in 1:nrow(plt_polygon)) {
-  if(plt_polygon$y[j] < ylim[1]) {
-    plt_polygon$y[j] = ylim[1] }
-}
-
-#Signficance Contours
-plt_signif <- data.frame(x = rep(x$t, length(yvals)),
-                         y = rep(yvals, each = length(x$t)),
-                         z = c(t(x$signif)))
-
-
-
-#Working Version
-ggplot(plt_dataset) +
-  geom_tile(aes(x = Xt, y = Yvals, fill = Zval)) +
-  scale_fill_gradientn(colours = fill.colors) +
-  scale_x_continuous(name = "Time") +
-  scale_y_reverse(name = "Period", labels = scales::label_math(2^.x),
-                  limits = rev(ylim)) +
-  theme(legend.position = 'none') 
-
-ggplot() +
-  geom_polygon(plt_polygon, mapping = aes(x=x,y=y)) +
-  scale_y_reverse()
-
-#Working Version
-ggplot(plt_dataset) +
-  geom_tile(aes(x = Xt, y = Yvals, fill = Zval)) +
-  scale_fill_gradientn(colours = fill.colors) +
-  geom_polygon(plt_polygon, mapping = aes(x=x,y=y), fill = 'black',  alpha = 0.15) +
-  scale_x_continuous(name = "Time") +
-  scale_y_reverse(name = "Period", labels = scales::label_math(2^.x)) +
-  theme(legend.position = 'none') 
-  
-
-#Adding Contours
-ggplot()+
-  geom_contour(plt_signif, mapping = aes(x=x,y=y,z=z))
-
-
-#Adding Contours
-p4 <- ggplot(plt_dataset) +
-  geom_tile(aes(x = Xt, y = Yvals, fill = Zval)) +
-  scale_fill_gradientn(colours = fill.colors) +
-  geom_polygon(plt_polygon, mapping = aes(x=x,y=y), fill = 'black',  alpha = 0.15) +
-  geom_contour(plt_signif, mapping = aes(x=x,y=y,z=z), bins = 3,
-               size = 2, color ='black') +
-  scale_x_continuous(name = "Time") +
-  scale_y_reverse(name = "Period", labels = scales::label_math(2^.x)) +
-  theme(legend.position = 'none') 
 
