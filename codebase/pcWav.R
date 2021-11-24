@@ -49,6 +49,8 @@ input_data$Year <- NULL
 #3. Lat-Lon coordinates of the Sites (coords)
 #4. Years (yrs)
 
+###Output (TBD)
+
 
 
 #________________________________________________________________________________#
@@ -133,7 +135,7 @@ PCwav=function(Dat,npcs,coords,yrs){
                fill="#D3D3D3", color="#000000", size=0.15) +
       scale_x_continuous(name = "lon", limits = c(-91, -78)) +
       scale_y_continuous(name = "lat", limits = c(36.5, 43)) +
-      geom_point(data = site_loc, aes(x= Lon, y = Lat, 
+      geom_point(data = coords, aes(x= Lon, y = Lat, 
                                      color = pcs$rotation[,i])) +
       scale_color_gradient2(low="blue", high="red") +
       labs(title = paste0("PC-",i," Eigenvectors")) + 
