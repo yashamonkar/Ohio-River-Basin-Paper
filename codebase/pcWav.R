@@ -204,7 +204,6 @@ PCwav=function(Dat,npcs,coords,yrs){
     plot(wt1)
     
   }
-  dev.off()  
  
 }
 
@@ -215,9 +214,9 @@ PCwav=function(Dat,npcs,coords,yrs){
 site_loc <- data.frame(Lat = site_info$dec_lat_va, 
                        Lon = site_info$dec_long_va)
 
-
+pdf("figures/PC_Wavelet_Analysis.pdf")
 PCwav(Dat = input_data, 
       npcs = 3,
       coords = site_loc,
       yrs = Years)
-
+dev.off()
