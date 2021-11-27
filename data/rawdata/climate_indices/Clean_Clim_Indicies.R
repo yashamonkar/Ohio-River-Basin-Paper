@@ -24,82 +24,47 @@ enso <- read.table("iersst_nino3.4a_rel.dat.txt",  sep ="")
 pdo <- read.table("ipdo_ersst.dat.txt", header = TRUE, sep ="", dec=".")
 nao <- read.table("inao.dat.txt", header = TRUE, sep ="", dec=".")
 amo <- read.table("iamo_ersst.dat.txt", header = TRUE, sep ="", dec=".")
-Months <- c("Jan","Feb","Mar","April","May","June", "Jul","Aug","Sept","Oct","Nov","Dec")
 
 
 #________________________________________________________________________________#
+#--------------------------------------------------------------------------------#
 ###ENSO
+nino_ts <- ts(enso$V2, start = c(1854,1), end = c(2021,9), frequency = 12)
+plot(nino_ts)
 
-nino <- ts(enso$V2, start = c(1854,1), frequency = 12)
+#--------------------------------------------------------------------------------#
+###NAO
+st_yr <- nao$X1821[1]
+nao$X1821 <- NULL #Remove the Year
+nao[,13] <- NULL #Remove the average
+nao[nao == -999.900] <- NA
+nao_ts <- c(t(nao))
+nao_ts <- ts(nao_ts, start = c(st_yr,1), frequency = 12)
+plot(nao_ts)
 
+#--------------------------------------------------------------------------------#
+##AMO
+st_yr <- amo$X1880[1]
+amo$X1880 <- NULL
+amo[amo == -999.900] <- NA
+amo_ts <- c(t(amo))
+amo_ts <- ts(amo_ts, start = c(st_yr,1), frequency = 12)
+plot(amo_ts)
 
-temp <- do.call(rbind, strsplit(as.character(nino_34[,1]),"\\."))
-nino_34$V1 <- NULL
-colnames(nino_34) <- c("ENSO")
-nino_34$Year <- nino_34$Month <- temp[,1] 
-nino_34$Month[1:1788] <- rep(Months,149)
-nino_34$Month[1789:1798] <- Months[1:10]
-nino_34$Water_Year <- NA
-for(i in 1:nrow(nino_34)){
-  if(nino_34$Month[i] %in% c("Oct","Nov","Dec")){
-    nino_34$Water_Year[i] <- as.numeric(nino_34$Year[i])+1
-  }
-  else{
-    nino_34$Water_Year[i] <- nino_34$Year[i]
-  }
-}
-write.table(nino_34, "Nino_34.txt", sep = " ")
+#--------------------------------------------------------------------------------#
+##PDO
+st_yr <- pdo$X1880[1]
+pdo$X1880 <- NULL
+pdo[pdo == -999.900] <- NA
+pdo_ts <- c(t(pdo))
+pdo_ts <- ts(pdo_ts, start = c(st_yr,1), frequency = 12)
+plot(pdo_ts)
 
-#NAO
-nao_temp <- list()
-for(i in 1:nrow(nao)){
-  nao_temp[[i]] <- nao[i,2:13]}
-nao <- data.frame(Year = rep(1822:2019,each = 12), Month = rep(Months, 198), NAO=unlist(nao_temp))
-nao <- head(nao,-3) #Removing the months where we do not have data. 
-nao$Water_Year <- NA
-for(i in 1:nrow(nao)){
-  if(nao$Month[i] %in% c("Oct","Nov","Dec")){
-    nao$Water_Year[i] <- as.numeric(nao$Year[i])+1
-  }
-  else{
-    nao$Water_Year[i] <- nao$Year[i]
-  }
-}
-nao$NAO[nao$NAO == -999.9] <- NA
-nao <- nao[complete.cases(nao), ]
-write.table(nao, "NAO.txt", sep = " ")
+#________________________________________________________________________________#
+#Saving the data
+climate_indices <- list(ENSO = nino_ts,
+                        NAO = nao_ts,
+                        PDO = pdo_ts,
+                        AMO = amo_ts)
 
-#PDO
-pdo_temp <- list()
-for(i in 1:nrow(pdo)){
-  pdo_temp[[i]] <- pdo[i,2:13]}
-pdo <- data.frame(Year = rep(1881:2020,each=12), Month = rep(Months, 140), PDO = unlist(pdo_temp))
-pdo$Water_Year <- NA
-for(i in 1:nrow(pdo)){
-  if(pdo$Month[i] %in% c("Oct","Nov","Dec")){
-    pdo$Water_Year[i] <- as.numeric(pdo$Year[i])+1
-  }
-  else{
-    pdo$Water_Year[i] <- pdo$Year[i]
-  }
-}
-pdo$PDO[pdo$PDO == -999.9] <- NA
-pdo <- pdo[complete.cases(pdo), ]
-write.table(pdo, "PDO.txt", sep = " ")
-
-
-#AMO
-amo_temp <- list()
-for(i in 1:nrow(amo)){
-  amo_temp[[i]] <- amo[i,2:13]}
-amo <- data.frame(Year = rep(1855:2020,each=12), Month = rep(Months, 166), AMO = unlist(amo_temp))
-amo$Water_Year <- NA
-for(i in 1:nrow(amo)){
-  if(amo$Month[i] %in% c("Oct","Nov","Dec")){
-    amo$Water_Year[i] <- as.numeric(amo$Year[i])+1
-  }
-  else{
-    amo$Water_Year[i] <- amo$Year[i]
-  }
-}
-write.table(amo, "AMO.txt", sep = " ")
+save(climate_indices, file="Climate_Indices.RData")
