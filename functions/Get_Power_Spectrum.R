@@ -7,10 +7,7 @@
 
 ###Output
 #1. Global Power Spectrum - ggplot2
-
-
-
-
+#2. Ylimits
 
 #______________________________________________________________________#
 get_power_spectrum <- function(x){
