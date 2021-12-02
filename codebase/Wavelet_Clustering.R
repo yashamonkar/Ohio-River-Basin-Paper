@@ -153,9 +153,9 @@ wavclust=function(Dat,coord,yrs){
     #Plot the Cluster Memberships and Eigenvectors
     
     current_members <- coord %>% filter(Cluster == i)
-    eigen_mean <- mean(pcw$rotation[,i])
-    eigen_min <- min(pcw$rotation[,i])
-    eigen_max <- max(pcw$rotation[,i])
+    eigen_mean <- mean(pcw$rotation[,1])
+    eigen_min <- min(pcw$rotation[,1])
+    eigen_max <- max(pcw$rotation[,1])
     
     
     p2 <- ggplot() +
@@ -166,7 +166,7 @@ wavclust=function(Dat,coord,yrs){
       scale_y_continuous(name = "lat", limits = c(36.5, 43)) +
       geom_point(data = coord, aes(x= Lon, y = Lat), shape = 1) +
       geom_point(data = current_members, aes(x= Lon, y = Lat, 
-                                             color = pcw$rotation[,i])) +
+                                             color = pcw$rotation[,1])) +
       scale_color_gradient2(low="blue", high="red") +
       labs(title = paste0("Cluster-",i," PC-1 Eigenvectors")) + 
       labs(color="Eigenvectors")  +
@@ -231,7 +231,7 @@ wavclust=function(Dat,coord,yrs){
                     labels = c("A", "B", "C", "D"),
                     label_size = 12))
     
-    plot(wt1)
+    #plot(wt1)
     
   }
   

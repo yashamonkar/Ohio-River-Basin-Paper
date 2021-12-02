@@ -144,7 +144,7 @@ get_clim_connections <- function(AM_Data, Climate_Index,
   
   ###Plotting the results
   print(plot_grid(p1,p2$ps,p3,
-                  nrow = 1,
+                  nrow = 2,
                   labels = c("A", "B", "C"),
                   label_size = 12))
   

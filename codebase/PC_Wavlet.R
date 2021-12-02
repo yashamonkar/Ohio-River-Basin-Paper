@@ -203,7 +203,7 @@ PCwav=function(Dat,npcs,coords,yrs){
               labels = c("A", "B", "C", "D"),
               label_size = 12))
     
-    plot(wt1)
+    #plot(wt1)
     
   }
  
