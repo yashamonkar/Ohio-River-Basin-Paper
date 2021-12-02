@@ -133,7 +133,7 @@ get_wavelet_coherence <- function(x,Fields){
     scale_x_continuous(name = "Time", limits = c(xlim), expand = c(0, 0)) +
     scale_y_reverse(name = "Period (Years)", labels = scales::label_math(2^.x),
                     expand = c(0, 0)) +
-    ggtitle(paste0("Wavelet Coherence - ", Fields)) + 
+    ggtitle(paste0("Wavelet Coherence ", Fields)) + 
     theme_bw()+
     theme(legend.position = 'none',
           axis.text=element_text(size=10),
