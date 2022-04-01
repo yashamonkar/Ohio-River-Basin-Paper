@@ -1,6 +1,19 @@
 #________________________________________________________________________________#
-###Code for PC-Wavelet Plots
-#To get the PC-Wavelet Plots for the annual maximum data
+###Code for Principal Component (PC) - Wavelet Analysis Methods 
+
+
+###INPUT DATA
+#1. Ann-max Streamflow (Data Cleaned (/data/rawdata) earlier and ready to be used)
+#2. Site Information (Lat, Lon, Drainage Area -- from dataRetrival)
+
+
+###OUTPUT
+#1. Plots of the PC-Wavelet Analysis
+
+
+###Method
+#Step 1:- PCA on the Ann-Max Data
+#Step 2:- Wavelet analysis on each PCA. 
 
 
 
@@ -18,6 +31,7 @@ library(plotrix)
 library(maps)
 library(cowplot)
 library(ggplot2)
+library(scales)
 
 #Load Functions
 source('functions/Get_Power_Spectrum.R')
@@ -49,13 +63,11 @@ input_data$Year <- NULL
 #3. Lat-Lon coordinates of the Sites (coords)
 #4. Years (yrs)
 
-###Output (TBD)
+
+###Output
+#1. Plots of the PC-Wavelet Analysis
 
 
-
-#________________________________________________________________________________#
-
-#####PCwav Function#####
 PCwav=function(Dat,npcs,coords,yrs){
   
   #Load Dependencies
@@ -197,13 +209,11 @@ PCwav=function(Dat,npcs,coords,yrs){
     
   
     
-    
+    #Generate the final plot
     print(plot_grid(p1,p2,p3,p4$ps,
               nrow = 2,
               labels = c("A", "B", "C", "D"),
               label_size = 12))
-    
-    #plot(wt1)
     
   }
  
@@ -212,7 +222,7 @@ PCwav=function(Dat,npcs,coords,yrs){
 
 
 #________________________________________________________________________________#
-#Running the PC-Wavelet Analysis
+###Running the PC-Wavelet Analysis###
 site_loc <- data.frame(Lat = site_info$dec_lat_va, 
                        Lon = site_info$dec_long_va)
 
