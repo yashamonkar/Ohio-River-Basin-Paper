@@ -1,8 +1,20 @@
 #________________________________________________________________________________#
-###Code for Clust-PC-Wavelets
-#To get the Clust-PC-Wavelets Plots for the annual maximum data
+###Code for Wavelet Analysis - Clustering Method (Wave-Clust)
 
 
+###INPUT DATA
+#1. Ann-max Streamflow (Data Cleaned (/data/rawdata) earlier and ready to be used)
+#2. Site Information (Lat, Lon, Drainage Area -- from dataRetrival)
+
+
+###OUTPUT
+#1. Plots of the PC-Wavelet Analysis
+
+###Analysis
+##Step 1:- Cluster on the wavelet frequency powers. 
+##Step 2:- Get PC-1 for each cluster.
+##Step 3:- Plot the wavelet spectrum and power for PC-1
+##Step 4:- Plot the cluster membership.
 
 
 
@@ -18,6 +30,7 @@ library(plotrix)
 library(maps)
 library(cowplot)
 library(ggplot2)
+library(scales)
 
 #Load Functions
 source('functions/Get_Power_Spectrum.R')
@@ -231,7 +244,6 @@ wavclust=function(Dat,coord,yrs){
                     labels = c("A", "B", "C", "D"),
                     label_size = 12))
     
-    #plot(wt1)
     
   }
   
