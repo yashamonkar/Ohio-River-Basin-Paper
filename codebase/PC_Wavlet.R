@@ -99,9 +99,9 @@ PCwav=function(Dat,npcs,coords,yrs){
     geom_line(aes(x = NP, y = Var)) +
     geom_vline(xintercept = 3, linetype = 'dashed') +
     scale_x_continuous(name = "Number of PCs") +
-    annotate("text", x = 12, y = var[3]/max(var), 
-             label = paste0("Variance explained by 3 PCs - ",
-                            100*round(var[3]/max(var),2),"%")) +
+    annotate("text", x = 12, y = var[npcs]/max(var), 
+             label = paste0("Variance explained by", npcs ," PCs - ",
+                            100*round(var[npcs]/max(var),2),"%")) +
     scale_y_continuous(name = "Variance Explained") +
     labs(title = "Variance explained by the PCs") + 
     theme_bw() +
@@ -130,9 +130,9 @@ PCwav=function(Dat,npcs,coords,yrs){
       scale_y_continuous(name = "PC-Score") +
       labs(title = paste0("PC-",i," Score")) + 
       theme_bw() +
-      theme(plot.title = element_text(size=12),
-            axis.text=element_text(size=5),
-            axis.title=element_text(size=10)) 
+      theme(plot.title = element_text(size=18),
+            axis.text=element_text(size=12),
+            axis.title=element_text(size=15)) 
     
     #--------------------------------------------------------------------------------#
     #Plot the PC Eigenvectors
@@ -148,18 +148,20 @@ PCwav=function(Dat,npcs,coords,yrs){
       scale_x_continuous(name = "lon", limits = c(-91, -78)) +
       scale_y_continuous(name = "lat", limits = c(36.5, 43)) +
       geom_point(data = coords, aes(x= Lon, y = Lat, 
-                                     color = pcs$rotation[,i])) +
-      scale_color_gradient2(low="blue", high="red") +
+                                     fill = pcs$rotation[,i]),
+                 colour="black",pch=21, size=3) +
+      scale_fill_gradient2(low="blue", high="red") +
       labs(title = paste0("PC-",i," Eigenvectors")) + 
       labs(color="Eigenvectors")  +
       theme_bw() +
-      theme(legend.text=element_text(size=7),
-            legend.title=element_text(size=5),
+      theme(legend.text=element_text(size=10),
+            legend.title=element_blank(),
             axis.text=element_text(size=0),
             axis.title=element_text(size=0),
             axis.ticks = element_blank(),
-            plot.title = element_text(size=12),
-            legend.key.height  = unit(0.75, "cm"))
+            plot.title = element_text(size=18),
+            legend.key.width  = unit(1.25, "cm"),
+            legend.position = "bottom")
     
     
     #Wavelet Analysis 
@@ -203,9 +205,9 @@ PCwav=function(Dat,npcs,coords,yrs){
       scale_y_continuous(trans = reverselog_trans(2),
                       name = "Period (Years)") +
       theme_bw() +
-      theme(axis.text=element_text(size=10),
-            axis.title=element_text(size=10),
-            plot.title = element_text(size=12))
+      theme(axis.text=element_text(size=12),
+            axis.title=element_text(size=15),
+            plot.title = element_text(size=15))
     
   
     

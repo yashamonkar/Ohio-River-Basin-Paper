@@ -121,9 +121,9 @@ get_power_spectrum <- function(x){
     ggtitle("Wavelet Power Spectrum") + 
     theme_bw()+
     theme(legend.position = 'none',
-          axis.text=element_text(size=10),
-          axis.title=element_text(size=10),
-          plot.title = element_text(size=12)) 
+          axis.text=element_text(size=12),
+          axis.title=element_text(size=15),
+          plot.title = element_text(size=15)) 
   
  out = list(ps=ps,xlim=xlim,ylim=ylim)
   
