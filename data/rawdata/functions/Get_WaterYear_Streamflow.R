@@ -44,6 +44,7 @@ end_date <- end_date
 #hasDataTypeCd tells how is the parameter of interest measured. dv means daily. Source:- https://waterservices.usgs.gov/rest/Site-Service.html#outputDataTypeCd
 sites_info <- list()
 for(i in 1:lats) {
+  print(i)
  lat_mi <- lat_min+i-1;lat_ma <- lat_mi+1
   for(j in 1:lons) {
    lon_mi <- lon_min+j-1;lon_ma <- lon_mi+1
@@ -163,6 +164,7 @@ num_sites <- dim(final_sites)[1]
 Dataset_Years <- format(as.Date(startDate, format="%Y-%m-%d"),"%Y"):format(as.Date(endDate, format="%Y-%m-%d"),"%Y")
 Dataset_Years <- tail(Dataset_Years,-1)
 Ann_Max_Streamflow <- as.data.frame(matrix(NA,nrow=length(Dataset_Years),ncol = num_sites))
+Ann_Max_Dates <- as.data.frame(matrix(NA,nrow=length(Dataset_Years),ncol = num_sites))
 
 pb = txtProgressBar(min = 1, max = num_sites, initial = 1) 
 for(i in 1:num_sites){
@@ -182,13 +184,17 @@ for(i in 1:num_sites){
     } else {0}
   }
   discharge$Water_Year <- discharge$Year + apply(as.array(discharge$Month), MARGIN = 1, FUN = water_year)
-  discharge <-  discharge %>% group_by(Water_Year) %>% summarise(Ann_Max = max(Flow))
-  Ann_Max_Streamflow[,i] <- discharge$Ann_Max
+  discharge_all <- discharge %>% group_by(Water_Year) %>% top_n(1, Flow) %>% sample_n(1)
+    
+  Ann_Max_Streamflow[,i] <- discharge_all$Flow
+  Ann_Max_Dates[,i] <- discharge_all$Date
 }
 Ann_Max_Streamflow$Year <- Dataset_Years
+Ann_Max_Dates$Year <- Dataset_Years
 
 setwd('..') #Saving it in the Parent Directory
 write.table(final_sites, 'Site_Information.txt', sep=" ")
 write.table(Ann_Max_Streamflow, 'Annual_Maximum_Streamflow.txt', sep=" ")
+write.table(Ann_Max_Dates, 'Ann_Max_Dates.txt', sep=" ")
 
 }

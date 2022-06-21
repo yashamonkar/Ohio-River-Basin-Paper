@@ -19,6 +19,7 @@ library(plotrix)
 library(maps)
 library(cowplot)
 library(ggplot2)
+library(scales)
 
 
 #Load Functions
@@ -52,38 +53,38 @@ input_data$Year <- NULL
 Season <- c(1,2,12)
 
 #ENSO
-climate_indices$ENSO$Year <- get_water_year(Yrs = climate_indices$ENSO$Year,
+climate_indices$ENSO$Water_Year <- get_water_year(Yrs = climate_indices$ENSO$Year,
                                                   Mns = climate_indices$ENSO$Month)
 enso <- climate_indices$ENSO %>% 
-  group_by(Year) %>%
-  filter(Month == Season & Year > (Years[1]-1)) %>%
+  group_by(Water_Year) %>%
+  filter(Month == Season & Water_Year > (Years[1]-1)) %>%
   summarise(ENSO = mean(ENSO))
 enso <- enso[complete.cases(enso), ]
 
 #NAO
-climate_indices$NAO$Year <- get_water_year(Yrs = climate_indices$NAO$Year,
+climate_indices$NAO$Water_Year <- get_water_year(Yrs = climate_indices$NAO$Year,
                                             Mns = climate_indices$NAO$Month)
 nao <- climate_indices$NAO %>% 
-  group_by(Year) %>%
-  filter(Month == Season & Year > (Years[1]-1)) %>%
+  group_by(Water_Year) %>%
+  filter(Month == Season & Water_Year > (Years[1]-1)) %>%
   summarise(NAO = mean(NAO))
 nao <- nao[complete.cases(nao),]
 
 #PDO
-climate_indices$PDO$Year <- get_water_year(Yrs = climate_indices$PDO$Year,
+climate_indices$PDO$Water_Year <- get_water_year(Yrs = climate_indices$PDO$Year,
                                            Mns = climate_indices$PDO$Month)
 pdo <- climate_indices$PDO %>% 
-  group_by(Year) %>%
-  filter(Month == Season & Year > (Years[1]-1)) %>%
+  group_by(Water_Year) %>%
+  filter(Month == Season & Water_Year > (Years[1]-1)) %>%
   summarise(PDO = mean(PDO))
 pdo <- pdo[complete.cases(pdo),]
 
 #AMO
-climate_indices$AMO$Year <- get_water_year(Yrs = climate_indices$AMO$Year,
+climate_indices$AMO$Water_Year <- get_water_year(Yrs = climate_indices$AMO$Year,
                                            Mns = climate_indices$AMO$Month)
 amo <- climate_indices$AMO %>% 
-  group_by(Year) %>%
-  filter(Month == Season & Year > (Years[1]-1)) %>%
+  group_by(Water_Year) %>%
+  filter(Month == Season & Water_Year > (Years[1]-1)) %>%
   summarise(AMO = mean(AMO))
 amo <- amo[complete.cases(amo),]
 
@@ -114,7 +115,7 @@ get_clim_connections <- function(AM_Data, Climate_Index,
     scale_y_continuous(name = "Index Value") +
     labs(title = paste0(Field)) + 
     theme_bw() +
-    theme(plot.title = element_text(size=12),
+    theme(plot.title = element_text(size=1),
           axis.text=element_text(size=5),
           axis.title=element_text(size=10)) 
   
@@ -163,10 +164,10 @@ get_clim_connections <- function(AM_Data, Climate_Index,
     theme_bw() +
     theme(axis.text=element_text(size=10),
           axis.title=element_text(size=10),
-          plot.title = element_text(size=12))
+          plot.title = element_text(size=15))
   
   #--------------------------------------------------------------------------------#
-  #Cross Wavelet Spectrum
+  #Wavelet Coherence
   t1 = cbind(Yrs, Climate_Index)
   t2 = cbind(Yrs, pc1)
   wtc.AB = wtc(t1, t2)
@@ -176,9 +177,14 @@ get_clim_connections <- function(AM_Data, Climate_Index,
   
   
   ###Plotting the results
-  print(plot_grid(p1,p2,p3,p4$ps,
-                  nrow = 2,
-                  labels = c("A", "B", "C", "D"),
+  #print(plot_grid(p1,p2,p3,p4$ps,
+  #                nrow = 2,
+  #                labels = c("A", "B", "C", "D"),
+  #                label_size = 12))
+  
+  print(plot_grid(p3,p4$ps,p2,
+                  nrow = 1,
+                  labels = c("A", "B", "C"),
                   label_size = 12))
   
 }
@@ -187,28 +193,29 @@ get_clim_connections <- function(AM_Data, Climate_Index,
 #________________________________________________________________________________#
 ###Function to analyze the results
 
-pdf("figures/Climate_Connections.pdf")
+#pdf("figures/Climate_Connections.pdf", height=1850/300, width=5000/300)
+pdf("Trial.pdf", height=1850/300, width=5000/300)
 get_clim_connections(AM_Data = input_data,
                      Climate_Index = enso$ENSO,
-                     Yrs = enso$Year,
+                     Yrs = enso$Water_Year,
                      Field = "ENSO - DJF")
 
 
 get_clim_connections(AM_Data = input_data,
                      Climate_Index = nao$NAO,
-                     Yrs = nao$Year,
+                     Yrs = nao$Water_Year,
                      Field = "NAO - DJF")
 
 
 get_clim_connections(AM_Data = input_data,
                      Climate_Index = amo$AMO,
-                     Yrs = amo$Year,
+                     Yrs = amo$Water_Year,
                      Field = "AMO - DJF")
 
 
 get_clim_connections(AM_Data = input_data,
                      Climate_Index = pdo$PDO,
-                     Yrs = pdo$Year,
+                     Yrs = pdo$Water_Year,
                      Field = "PDO - DJF")
 
 dev.off()

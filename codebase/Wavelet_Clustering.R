@@ -120,20 +120,21 @@ wavclust=function(Dat,coord,yrs){
              fill="#D3D3D3", color="#000000", size=0.15) +
     scale_x_continuous(name = "lon", limits = c(-91, -78)) +
     scale_y_continuous(name = "lat", limits = c(36.5, 43)) +
-    geom_point(data = coord, aes(x= Lon, y = Lat, color = Cluster),
-               size = 1.5) +
+    geom_point(data = coord, aes(x= Lon, y = Lat, fill = Cluster),
+               colour="black",pch=21, size=4) +
     labs(title = paste0("Cluster Membership")) + 
     labs(color="Clusters")  +
     theme_bw() +
-    theme(legend.text=element_text(size=10),
-          legend.title=element_text(size=10),
+    theme(legend.text=element_text(size=12),
+          legend.title=element_text(size=12),
           axis.text=element_text(size=0),
           axis.title=element_text(size=0),
           axis.ticks = element_blank(),
           plot.title = element_text(size=15),
-          legend.key.height  = unit(1.75, "cm"))
+          legend.key.height  = unit(1.75, "cm"),
+          legend.position = "bottom")
   
-  pclust
+  print(pclust)
   
   #PC-Wavelet Analysis on each Cluster
   for (i in 1:nclus){
@@ -150,6 +151,11 @@ wavclust=function(Dat,coord,yrs){
     plt_dataset <- data.frame(PC = pc1,
                               Year = yrs,
                               Loess = lowess(yrs,pc1,f=1/9)$y)
+    if(i > 1) {
+      plt_dataset$PC <- -1*plt_dataset$PC
+      plt_dataset$Loess <- -1*plt_dataset$Loess
+    }
+    
     p1 <- ggplot(plt_dataset) +
       geom_line(aes(x = Year, y = Loess), size = 1.2, color ='red') +
       geom_point(aes(x = Year, y = PC), size = 0.1) +
@@ -158,9 +164,9 @@ wavclust=function(Dat,coord,yrs){
       scale_y_continuous(name = "PC-Score") +
       labs(title = paste0("Cluster-",i," PC-1 Score")) + 
       theme_bw() +
-      theme(plot.title = element_text(size=12),
-            axis.text=element_text(size=5),
-            axis.title=element_text(size=10)) 
+      theme(plot.title = element_text(size=18),
+            axis.text=element_text(size=12),
+            axis.title=element_text(size=15)) 
     
     #--------------------------------------------------------------------------------#
     #Plot the Cluster Memberships and Eigenvectors
@@ -178,19 +184,20 @@ wavclust=function(Dat,coord,yrs){
       scale_x_continuous(name = "lon", limits = c(-91, -78)) +
       scale_y_continuous(name = "lat", limits = c(36.5, 43)) +
       geom_point(data = coord, aes(x= Lon, y = Lat), shape = 1) +
-      geom_point(data = current_members, aes(x= Lon, y = Lat, 
-                                             color = pcw$rotation[,1])) +
-      scale_color_gradient2(low="blue", high="red") +
+      geom_point(data = current_members, aes(x= Lon, y = Lat, fill = pcw$rotation[,1]),
+                 colour="black",pch=21, size=3) +
+      scale_fill_gradient2(low="blue", high="red") +
       labs(title = paste0("Cluster-",i," PC-1 Eigenvectors")) + 
       labs(color="Eigenvectors")  +
       theme_bw() +
-      theme(legend.text=element_text(size=7),
-            legend.title=element_text(size=5),
+      theme(legend.text=element_text(size=10),
+            legend.title=element_blank(),
             axis.text=element_text(size=0),
             axis.title=element_text(size=0),
             axis.ticks = element_blank(),
-            plot.title = element_text(size=12),
-            legend.key.height  = unit(0.75, "cm"))
+            plot.title = element_text(size=18),
+            legend.key.width  = unit(1.25, "cm"),
+            legend.position = "bottom")
     
     
     #Wavelet Analysis 
@@ -232,9 +239,9 @@ wavclust=function(Dat,coord,yrs){
       scale_y_continuous(trans = reverselog_trans(2),
                          name = "Period (Years)") +
       theme_bw() +
-      theme(axis.text=element_text(size=10),
-            axis.title=element_text(size=10),
-            plot.title = element_text(size=12))
+      theme(axis.text=element_text(size=12),
+            axis.title=element_text(size=15),
+            plot.title = element_text(size=15))
     
     
     
