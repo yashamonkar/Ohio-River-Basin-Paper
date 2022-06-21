@@ -195,6 +195,6 @@ Ann_Max_Dates$Year <- Dataset_Years
 setwd('..') #Saving it in the Parent Directory
 write.table(final_sites, 'Site_Information.txt', sep=" ")
 write.table(Ann_Max_Streamflow, 'Annual_Maximum_Streamflow.txt', sep=" ")
-write.table(Ann_Max_Dates, 'Ann_Max_Dates.txt', sep=" ")
+write.table(Ann_Max_Dates, 'Annual_Maximum_Dates.txt', sep=" ")
 
 }
