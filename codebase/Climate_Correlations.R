@@ -38,10 +38,10 @@ input_data$Year <- NULL
 #________________________________________________________________________________#
 ####Data-Wrangling Climate Indices
 
-#Select the Months
-Season <- c(2,3,4)
 
-#ENSO
+###ENSO
+Season <- c(1,2,12) #Select the Months
+
 climate_indices$ENSO$Water_Year <- get_water_year(Yrs = climate_indices$ENSO$Year,
                                                   Mns = climate_indices$ENSO$Month)
 enso <- climate_indices$ENSO %>% 
@@ -50,7 +50,9 @@ enso <- climate_indices$ENSO %>%
   summarise(ENSO = mean(ENSO))
 enso <- enso[complete.cases(enso), ]
 
-#NAO
+###NAO
+Season <- c(1,2,12) #Select the Months
+
 climate_indices$NAO$Water_Year <- get_water_year(Yrs = climate_indices$NAO$Year,
                                             Mns = climate_indices$NAO$Month)
 nao <- climate_indices$NAO %>% 
@@ -59,7 +61,9 @@ nao <- climate_indices$NAO %>%
   summarise(NAO = mean(NAO))
 nao <- nao[complete.cases(nao),]
 
-#PDO
+###PDO
+Season <- c(1,2,12) #Select the Months
+
 climate_indices$PDO$Water_Year <- get_water_year(Yrs = climate_indices$PDO$Year,
                                            Mns = climate_indices$PDO$Month)
 pdo <- climate_indices$PDO %>% 
@@ -68,7 +72,9 @@ pdo <- climate_indices$PDO %>%
   summarise(PDO = mean(PDO))
 pdo <- pdo[complete.cases(pdo),]
 
-#AMO
+###AMO
+Season <- c(1,2,12) #Select the Months
+
 climate_indices$AMO$Water_Year <- get_water_year(Yrs = climate_indices$AMO$Year,
                                            Mns = climate_indices$AMO$Month)
 amo <- climate_indices$AMO %>% 
@@ -131,7 +137,7 @@ p.mat <- cor.mtest(cor_data)
 
 col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
 
-#pdf("figures/Climate_Correlations.pdf")
+pdf("figures/Climate_Correlations.pdf")
 corrplot(cor.mat, 
          method="color", 
          col=col(200),  
@@ -141,4 +147,4 @@ corrplot(cor.mat,
          # Combine with significance
          p.mat = p.mat, sig.level = 0.1, 
          insig = "blank")
-#dev.off()
+dev.off()

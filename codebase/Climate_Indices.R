@@ -49,44 +49,51 @@ input_data$Year <- NULL
 #________________________________________________________________________________#
 ####Data-Wrangling Climate Indices
 
-#Select the Months
-Season <- c(1,2,12)
 
-#ENSO
+###ENSO
+Season <- c(1,2,12) #Select the Months
+
 climate_indices$ENSO$Water_Year <- get_water_year(Yrs = climate_indices$ENSO$Year,
                                                   Mns = climate_indices$ENSO$Month)
 enso <- climate_indices$ENSO %>% 
   group_by(Water_Year) %>%
-  filter(Month == Season & Water_Year > (Years[1]-1)) %>%
+  filter(Month %in% Season & Water_Year > (Years[1]-1)) %>%
   summarise(ENSO = mean(ENSO))
 enso <- enso[complete.cases(enso), ]
 
-#NAO
+###NAO
+Season <- c(1,2,12) #Select the Months
+
 climate_indices$NAO$Water_Year <- get_water_year(Yrs = climate_indices$NAO$Year,
-                                            Mns = climate_indices$NAO$Month)
+                                                 Mns = climate_indices$NAO$Month)
 nao <- climate_indices$NAO %>% 
   group_by(Water_Year) %>%
-  filter(Month == Season & Water_Year > (Years[1]-1)) %>%
+  filter(Month %in% Season & Water_Year > (Years[1]-1)) %>%
   summarise(NAO = mean(NAO))
 nao <- nao[complete.cases(nao),]
 
-#PDO
+###PDO
+Season <- c(1,2,12) #Select the Months
+
 climate_indices$PDO$Water_Year <- get_water_year(Yrs = climate_indices$PDO$Year,
-                                           Mns = climate_indices$PDO$Month)
+                                                 Mns = climate_indices$PDO$Month)
 pdo <- climate_indices$PDO %>% 
   group_by(Water_Year) %>%
-  filter(Month == Season & Water_Year > (Years[1]-1)) %>%
+  filter(Month %in% Season & Water_Year > (Years[1]-1)) %>%
   summarise(PDO = mean(PDO))
 pdo <- pdo[complete.cases(pdo),]
 
-#AMO
+###AMO
+Season <- c(1,2,12) #Select the Months
+
 climate_indices$AMO$Water_Year <- get_water_year(Yrs = climate_indices$AMO$Year,
-                                           Mns = climate_indices$AMO$Month)
+                                                 Mns = climate_indices$AMO$Month)
 amo <- climate_indices$AMO %>% 
   group_by(Water_Year) %>%
-  filter(Month == Season & Water_Year > (Years[1]-1)) %>%
+  filter(Month %in% Season & Water_Year > (Years[1]-1)) %>%
   summarise(AMO = mean(AMO))
 amo <- amo[complete.cases(amo),]
+
 
 #________________________________________________________________________________#
 ###Function to analyze the Climate Connections
@@ -115,7 +122,7 @@ get_clim_connections <- function(AM_Data, Climate_Index,
     scale_y_continuous(name = "Index Value") +
     labs(title = paste0(Field)) + 
     theme_bw() +
-    theme(plot.title = element_text(size=1),
+    theme(plot.title = element_text(size=12),
           axis.text=element_text(size=5),
           axis.title=element_text(size=10)) 
   
@@ -157,7 +164,7 @@ get_clim_connections <- function(AM_Data, Climate_Index,
     geom_path(aes(x = Power, y = Period)) +
     geom_line(aes(x = W_noise, y = Period)) +
     geom_line(aes(x = R_noise, y = Period), color ='red') +
-    ggtitle("Global Wavelet Spectrum") + 
+    ggtitle(paste0(Field)) + 
     scale_x_continuous(name = "Variance") +
     scale_y_continuous(trans = reverselog_trans(2),
                        name = "Period (Years)") +
@@ -187,14 +194,16 @@ get_clim_connections <- function(AM_Data, Climate_Index,
                   labels = c("A", "B", "C"),
                   label_size = 12))
   
+  plot(wtc.AB, plot.phase = TRUE)
+  
 }
 
 
 #________________________________________________________________________________#
 ###Function to analyze the results
 
-#pdf("figures/Climate_Connections.pdf", height=1850/300, width=5000/300)
-pdf("Trial.pdf", height=1850/300, width=5000/300)
+pdf("figures/Climate_Connections.pdf", height=1850/300, width=5000/300)
+#pdf("Trial.pdf", height=1850/300, width=5000/300)
 get_clim_connections(AM_Data = input_data,
                      Climate_Index = enso$ENSO,
                      Yrs = enso$Water_Year,
