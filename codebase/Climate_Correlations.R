@@ -12,6 +12,7 @@ setwd("~/GitHub/Ohio-River-Basin-Paper")
 #Load Dependencies
 library(dplyr)
 library(corrplot)
+library(pracma)
 
 
 #Load Functions
@@ -49,6 +50,7 @@ enso <- climate_indices$ENSO %>%
   filter(Month %in% Season & Water_Year > (Years[1]-1)) %>%
   summarise(ENSO = mean(ENSO))
 enso <- enso[complete.cases(enso), ]
+enso$ENSO <- detrend(enso$ENSO, 'linear')
 
 ###NAO
 Season <- c(1,2,12) #Select the Months
@@ -60,6 +62,7 @@ nao <- climate_indices$NAO %>%
   filter(Month %in% Season & Water_Year > (Years[1]-1)) %>%
   summarise(NAO = mean(NAO))
 nao <- nao[complete.cases(nao),]
+nao$NAO <- detrend(nao$NAO, 'linear')
 
 ###PDO
 Season <- c(1,2,12) #Select the Months
@@ -71,6 +74,7 @@ pdo <- climate_indices$PDO %>%
   filter(Month %in% Season & Water_Year > (Years[1]-1)) %>%
   summarise(PDO = mean(PDO))
 pdo <- pdo[complete.cases(pdo),]
+pdo$PDO <- detrend(pdo$PDO, 'linear')
 
 ###AMO
 Season <- c(1,2,12) #Select the Months
@@ -82,6 +86,28 @@ amo <- climate_indices$AMO %>%
   filter(Month %in% Season & Water_Year > (Years[1]-1)) %>%
   summarise(AMO = mean(AMO))
 amo <- amo[complete.cases(amo),]
+amo$AMO <- detrend(amo$AMO, 'linear')
+
+
+###Interactions
+
+ENSO_PDO = (enso$ENSO - mean(enso$ENSO))*(pdo$PDO - mean(pdo$PDO))
+ENSO_PDO = detrend(ENSO_PDO, 'linear')
+
+ENSO_AMO = (enso$ENSO - mean(enso$ENSO))*(amo$AMO - mean(amo$AMO))
+ENSO_AMO = detrend(ENSO_AMO, 'linear')
+
+ENSO_NAO = (enso$ENSO - mean(enso$ENSO))*(nao$NAO - mean(nao$NAO))
+ENSO_NAO = detrend(ENSO_NAO, 'linear')
+
+PDO_AMO = (pdo$PDO - mean(pdo$PDO))*(amo$AMO - mean(amo$AMO))
+PDO_AMO = detrend(PDO_AMO, 'linear')
+
+PDO_NAO = (pdo$PDO - mean(pdo$PDO))*(nao$NAO - mean(nao$NAO))
+PDO_NAO = detrend(PDO_NAO, 'linear')
+
+AMO_NAO = (amo$AMO - mean(amo$AMO))*(nao$NAO - mean(nao$NAO))
+AMO_NAO = detrend(AMO_NAO, 'linear')
 
 #________________________________________________________________________________#
 ###Analyze the correlations###
@@ -89,6 +115,7 @@ amo <- amo[complete.cases(amo),]
 #PCA on Rainfall data
 pcs <- prcomp(input_data, scale = TRUE)
 pc1 <- pcs$x[,1]
+pc1 = detrend(pc1, 'linear')
 
 
 
