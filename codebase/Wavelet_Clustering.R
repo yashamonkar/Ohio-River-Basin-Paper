@@ -53,6 +53,12 @@ Years <- input_data$Year
 input_data$Year <- NULL
 
 
+#Remove the sites with visible flow regulation. 
+site_info <- site_info[-c(11,12),]
+input_data <- input_data[,-c(11,12)]
+
+
+
 #________________________________________________________________________________#
 ####Functions_Needed###########
 
