@@ -118,9 +118,9 @@ AMO_NAO = (amo$AMO - mean(amo$AMO))*(nao$NAO - mean(nao$NAO))
 
 
 ###Annual Temperatures
-annual_temp <- head(monthly_temp,-2)
+annual_temp <- head(monthly_temp,-1)
 annual_temp <- data.frame(Year=annual_temp[,1], avg_temp=rowMeans(annual_temp[,-1]))
-annual_temp <- annual_temp %>% filter(Year > 1933)
+annual_temp <- annual_temp %>% filter(Year > 1934)
 
 #________________________________________________________________________________#
 ###Analyze the correlations###
