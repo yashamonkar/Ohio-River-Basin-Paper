@@ -1,5 +1,6 @@
 #________________________________________________________________________________#
-###Code to analyze correlations between annual maximum rainfall and climate indices.
+###Code to analyze relationships between annual maximum rainfall and climate indices.
+###LASSO REGRESSIONS
 
 ###Output Needed - For each Climate Index
 #1. Just correlation plots
@@ -41,6 +42,8 @@ input_data$Year <- NULL
 #Remove the sites with visible flow regulation. 
 site_info <- site_info[-c(11,12),]
 input_data <- input_data[,-c(11,12)]
+
+
 
 
 #________________________________________________________________________________#
@@ -117,43 +120,21 @@ AMO_NAO = (amo$AMO - mean(amo$AMO))*(nao$NAO - mean(nao$NAO))
 #AMO_NAO = detrend(AMO_NAO, 'linear')
 
 
+####PCA on Rainfall data
+pcs <- prcomp(input_data, scale = TRUE)
+pc1 <- pcs$x[,1]
+pc2 <- pcs$x[,2]
+
+
+
 ###Annual Temperatures
 annual_temp <- head(monthly_temp,-2)
 annual_temp <- data.frame(Year=annual_temp[,1], avg_temp=rowMeans(annual_temp[,-1]))
 annual_temp <- annual_temp %>% filter(Year > 1933)
 
-#________________________________________________________________________________#
-###Analyze the correlations###
-
-#PCA on Rainfall data
-pcs <- prcomp(input_data, scale = TRUE)
-pc1 <- pcs$x[,1]
-pc2 <- pcs$x[,2]
-#pc1 = detrend(pc1, 'linear')
-
-
-
-#----------------Correlation on Indices-----------------------------------------#
-#Code for significance
-cor.mtest <- function(mat, ...) {
-  mat <- as.matrix(mat)
-  n <- ncol(mat)
-  p.mat<- matrix(NA, n, n)
-  diag(p.mat) <- 0
-  for (i in 1:(n - 1)) {
-    for (j in (i + 1):n) {
-      tmp <- cor.test(mat[, i], mat[, j], ...)
-      p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
-    }
-  }
-  colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
-  p.mat
-}
-
-
-
-
-
+plot(annual_temp$Year, annual_temp$avg_temp, type='l',
+     ylab = "Average Temperature anomaly", xlab = "Year", 
+     main = "Annual average global temperature anomalies")
 
 
 
