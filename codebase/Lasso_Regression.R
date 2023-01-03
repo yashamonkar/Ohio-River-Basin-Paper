@@ -138,6 +138,9 @@ annual_temp <- annual_temp %>% filter(Year > 1934)
 #_______________________________________________________________________________#
 ###----------------------------------LASSO REGRESSION-------------------------###
 
+#Create the PDF
+#pdf("figures/LASSO_Regression.pdf")
+
 #Create the dataset
 reg_data <- data.frame(PC1 = pc1,
                        PC2 = pc2,
@@ -156,12 +159,12 @@ reg_data <- data.frame(PC1 = pc1,
 
 #Seperate the dependent and independent variables
 X = as.matrix(reg_data[,-c(1,2)])
-Y = scale(reg_data$PC1)
+Y = scale(reg_data$PC2)
 
 
 ###Fitting the LASSO Model
 fit <- glmnet(X, Y)
-plot(fit, label = TRUE)
+#plot(fit, label = TRUE)
 print(fit)
 
 
@@ -172,4 +175,4 @@ coef(cvfit, s = "lambda.min")
 
 
 ###Model Diagnostics using the best estimate
-predict(cvfit, newx = X, s = "lambda.min")
+#predict(cvfit, newx = X, s = "lambda.min")

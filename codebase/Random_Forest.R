@@ -1,5 +1,6 @@
 #________________________________________________________________________________#
-###Code to analyze correlations between annual maximum rainfall and climate indices.
+###Code to analyze relationships between annual maximum rainfall and climate indices.
+###RANDOM FORESTS
 
 ###Output Needed - For each Climate Index
 #1. Just correlation plots
@@ -13,6 +14,7 @@ setwd("~/GitHub/Ohio-River-Basin-Paper")
 library(dplyr)
 library(corrplot)
 library(pracma)
+library(randomForest)
 
 
 #Load Functions
@@ -41,6 +43,8 @@ input_data$Year <- NULL
 #Remove the sites with visible flow regulation. 
 site_info <- site_info[-c(11,12),]
 input_data <- input_data[,-c(11,12)]
+
+
 
 
 #________________________________________________________________________________#
@@ -117,49 +121,28 @@ AMO_NAO = (amo$AMO - mean(amo$AMO))*(nao$NAO - mean(nao$NAO))
 #AMO_NAO = detrend(AMO_NAO, 'linear')
 
 
+####PCA on Rainfall data
+pcs <- prcomp(input_data, scale = TRUE)
+pc1 <- pcs$x[,1]
+pc2 <- pcs$x[,2]
+
+
+
 ###Annual Temperatures
 annual_temp <- head(monthly_temp,-1)
 annual_temp <- data.frame(Year=annual_temp[,1], avg_temp=rowMeans(annual_temp[,-1]))
 annual_temp <- annual_temp %>% filter(Year > 1934)
 
-#________________________________________________________________________________#
-###Analyze the correlations###
 
-#PCA on Rainfall data
-pcs <- prcomp(input_data, scale = TRUE)
-pc1 <- pcs$x[,1]
-pc2 <- pcs$x[,2]
-#pc1 = detrend(pc1, 'linear')
+#_______________________________________________________________________________#
+###----------------------------------LASSO REGRESSION-------------------------###
 
+#Create the PDF
+#pdf("figures/Random_Forest.pdf")
 
-
-#----------------Correlation on Indices-----------------------------------------#
-#Code for significance
-cor.mtest <- function(mat, ...) {
-  mat <- as.matrix(mat)
-  n <- ncol(mat)
-  p.mat<- matrix(NA, n, n)
-  diag(p.mat) <- 0
-  for (i in 1:(n - 1)) {
-    for (j in (i + 1):n) {
-      tmp <- cor.test(mat[, i], mat[, j], ...)
-      p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
-    }
-  }
-  colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
-  p.mat
-}
-
-
-
-
-
-
-
-
-#----------------Correlation on Interactions------------------------------------#
-cor_data <- data.frame(PC1 = pc1,
-                       PC2 = pc2,
+#Create the dataset
+pc_type <- 2
+reg_data <- data.frame(PC = scale(pc2),
                        ENSO = enso$ENSO,
                        PDO = pdo$PDO,
                        AMO = amo$AMO,
@@ -173,22 +156,25 @@ cor_data <- data.frame(PC1 = pc1,
                        Temp = annual_temp$avg_temp)
 
 
-# matrix of the p-value of the correlation
-cor.mat <- cor(cor_data)
-p.mat <- cor.mtest(cor_data)
 
 
-col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
 
-pdf("figures/Climate_Correlations.pdf")
-corrplot(cor.mat, 
-         method="color", 
-         col=col(200),  
-         type="upper",  
-         addCoef.col = "black", # Add coefficient of correlation
-         tl.col="black", tl.srt=45, tl.cex = 0.8, #Text label color and rotation
-         number.cex = 0.8,
-         # Combine with significance
-         p.mat = p.mat, sig.level = 0.05, 
-         insig = "blank")
-dev.off()
+###Fitting the RANDOM FOREST
+rf.fit <- randomForest(PC ~ ., data=reg_data, ntree=10000,
+                       keep.forest=FALSE, importance=TRUE, mtry = 4)
+print(rf.fit)
+#plot(rf.fit)
+
+#Plot the Variable Importance
+varImpPlot(rf.fit, sort = TRUE,  type='2',
+           main = paste0("Variable Importance PC-",pc_type))
+
+
+#Check the predictive skill
+plot(reg_data$PC, rf.fit$predicted, main = paste0("OOB Predictions PC-",pc_type),
+     xlim = c(min(reg_data$PC), max(reg_data$PC)), 
+     ylim = c(min(reg_data$PC), max(reg_data$PC)),
+     xlab = "True Data", 
+     ylab = "Predictions")
+abline(0,1, col='red')
+
