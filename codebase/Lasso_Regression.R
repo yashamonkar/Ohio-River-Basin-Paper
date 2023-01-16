@@ -172,7 +172,7 @@ print(fit)
 cvfit <- cv.glmnet(X, Y)
 plot(cvfit)
 coef(cvfit, s = "lambda.min")
-
+plot(cvfit, xvar = "lambda", label = TRUE)
 
 ###Model Diagnostics using the best estimate
 #predict(cvfit, newx = X, s = "lambda.min")

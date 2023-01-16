@@ -36,6 +36,13 @@ site_info <- read.table("data/site_information.txt", sep="", header = TRUE)
 Years <- input_data$Year
 input_data$Year <- NULL
 
+
+#Remove the sites with visible flow regulation. 
+site_info <- site_info[-c(11,12),]
+input_data <- input_data[,-c(11,12)]
+
+
+
 pdf("figures/Exceedances.pdf")
 
 #________________________________________________________________________________#
@@ -59,12 +66,11 @@ ggplot(plt_dataset, aes(x=Years, y = count_exceedances)) +
   geom_point() +
   geom_line() +
   ylab("Count Exceedances") +
-  labs(title = "Exceedances across the Ohio River Basin") + 
+  labs(title = "Annual Exceedances across the Ohio River Basin") + 
   theme_bw() +
-  theme(plot.title = element_text(size=18),
-    axis.text=element_text(size=12),
-    axis.title=element_text(size=15),
-    legend.text=element_text(size=15))
+  theme(plot.title = element_text(size=17),
+    axis.text=element_text(size=15),
+    axis.title=element_text(size=15))
 
 
 dev.off()

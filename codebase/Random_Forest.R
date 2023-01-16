@@ -141,8 +141,8 @@ annual_temp <- annual_temp %>% filter(Year > 1934)
 #pdf("figures/Random_Forest.pdf")
 
 #Create the dataset
-pc_type <- 2
-reg_data <- data.frame(PC = scale(pc2),
+pc_type <- 1
+reg_data <- data.frame(PC = scale(pc1),
                        ENSO = enso$ENSO,
                        PDO = pdo$PDO,
                        AMO = amo$AMO,

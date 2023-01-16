@@ -101,10 +101,10 @@ PCwav=function(Dat,npcs,coords,yrs){
   pvar <- ggplot(pc_var) +
     geom_point(aes(x = NP, y = Var)) +
     geom_line(aes(x = NP, y = Var)) +
-    geom_vline(xintercept = 3, linetype = 'dashed') +
+    geom_vline(xintercept = 2, linetype = 'dashed') +
     scale_x_continuous(name = "Number of PCs") +
     annotate("text", x = 12, y = var[npcs]/max(var), 
-             label = paste0("Variance explained by", npcs ," PCs - ",
+             label = paste0("Variance explained by ", npcs ," PCs - ",
                             100*round(var[npcs]/max(var),2),"%")) +
     scale_y_continuous(name = "Variance Explained") +
     labs(title = "Variance explained by the PCs") + 
@@ -234,7 +234,7 @@ site_loc <- data.frame(Lat = site_info$dec_lat_va,
 
 pdf("figures/PC_Wavelet_Analysis.pdf")
 PCwav(Dat = input_data, 
-      npcs = 3,
+      npcs = 2,
       coords = site_loc,
       yrs = Years)
 dev.off()
