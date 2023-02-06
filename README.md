@@ -1,10 +1,13 @@
 # Compound climate risk: Diagnosing clustered regional flooding at inter-annual and longer time scales
 
 This is the code repository for the paper "Compound climate risk: Diagnosing clustered regional flooding at inter-annual and longer time scales" by Yash Amonkar (Columbia), James Doss-Gollin (Rice University) and Upmanu Lall (Columbia). 
-This work has been submitted to MDPI Hydrology (https://www.mdpi.com/journal/hydrology) for consideration.
+This work has been submitted to the journal [Hydrology](https://www.mdpi.com/journal/hydrology) for consideration.
 
-All code to replicate the work done in the paper along with the supplementery materials is archived here. The scripts in the /codebase, when run, replicate the entire study along with additional cases and plots for an extensive analysis. Most individual sub-routines are stored as functions in /functions.
+All code to replicate the work done in the paper along with the supplementery materials is archived here.
+The scripts in `codebase/`, when run, replicate the entire study along with additional cases and plots for an extensive analysis.
+Most individual sub-routines are stored as functions in `functions/`.
  
+<<<<<<< HEAD
 Abstract -  The potential for extreme climate events to cluster in space and time has driven increased interest in understanding and predicting compound climate risks. 
 Through a case study of floods in the Ohio River Basin, we demonstrate that low-frequency climate variability can drive spatial and temporal clustering of risk of regional climate extremes. 
 Long records of annual maximum streamflow from 24 USGS gauges are used to explore the regional spatiotemporal patterns of flooding and their associated large-scale climate modes. 
