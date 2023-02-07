@@ -135,11 +135,17 @@ annual_temp <- annual_temp %>% filter(Year > 1934)
 
 
 #_______________________________________________________________________________#
-###----------------------------------LASSO REGRESSION-------------------------###
+###----------------------------------Random Forests-------------------------###
 
 #Create the PDF
-#pdf("figures/Random_Forest.pdf")
+pdf("figures/Random_Forest.pdf")
 
+#Set the grid design
+par(mfrow = c(1,1))
+
+
+#_______________________________________________________________________________#
+#PC-1
 #Create the dataset
 pc_type <- 1
 reg_data <- data.frame(PC = scale(pc1),
@@ -157,24 +163,50 @@ reg_data <- data.frame(PC = scale(pc1),
 
 
 
+###Fitting the RANDOM FOREST
+rf.fit <- randomForest(PC ~ ., data=reg_data, ntree=10000,
+                       keep.forest=FALSE, importance=TRUE, mtry = 4)
+#print(rf.fit)
+#plot(rf.fit)
+
+#Plot the Variable Importance
+varImpPlot(rf.fit, sort = TRUE,  type='2',
+           main = paste0("Variable Importance \n PC-",pc_type))
+
+
+
+
+#_______________________________________________________________________________#
+#PC-2
+#Create the dataset
+pc_type <- 2
+reg_data <- data.frame(PC = scale(pc2),
+                       ENSO = enso$ENSO,
+                       PDO = pdo$PDO,
+                       AMO = amo$AMO,
+                       NAO = nao$NAO,
+                       ENSO_PDO = enso$ENSO*pdo$PDO,
+                       ENSO_AMO = enso$ENSO*amo$AMO,
+                       ENSO_NAO = enso$ENSO*nao$NAO,
+                       PDO_AMO = pdo$PDO*amo$AMO,
+                       PDO_NAO = pdo$PDO*nao$NAO,
+                       AMO_NAO = amo$AMO*nao$NAO,
+                       Temp = annual_temp$avg_temp)
+
 
 
 ###Fitting the RANDOM FOREST
 rf.fit <- randomForest(PC ~ ., data=reg_data, ntree=10000,
                        keep.forest=FALSE, importance=TRUE, mtry = 4)
-print(rf.fit)
+#print(rf.fit)
 #plot(rf.fit)
 
 #Plot the Variable Importance
 varImpPlot(rf.fit, sort = TRUE,  type='2',
-           main = paste0("Variable Importance PC-",pc_type))
+           main = paste0("Variable Importance \n PC-",pc_type))
 
 
-#Check the predictive skill
-plot(reg_data$PC, rf.fit$predicted, main = paste0("OOB Predictions PC-",pc_type),
-     xlim = c(min(reg_data$PC), max(reg_data$PC)), 
-     ylim = c(min(reg_data$PC), max(reg_data$PC)),
-     xlab = "True Data", 
-     ylab = "Predictions")
-abline(0,1, col='red')
+#Set the grid design
+par(mfrow = c(1,1))
 
+dev.off()

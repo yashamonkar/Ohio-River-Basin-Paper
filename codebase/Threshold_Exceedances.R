@@ -38,8 +38,8 @@ input_data$Year <- NULL
 
 
 #Remove the sites with visible flow regulation. 
-site_info <- site_info[-c(11,12),]
-input_data <- input_data[,-c(11,12)]
+site_info <- site_info[-c(11,12,15),]
+input_data <- input_data[,-c(11,12,15)]
 
 
 
@@ -66,11 +66,12 @@ ggplot(plt_dataset, aes(x=Years, y = count_exceedances)) +
   geom_point() +
   geom_line() +
   ylab("Count Exceedances") +
+  xlim(c(1934,2025))+
   labs(title = "Annual Exceedances across the Ohio River Basin") + 
   theme_bw() +
   theme(plot.title = element_text(size=17),
-    axis.text=element_text(size=15),
-    axis.title=element_text(size=15))
+    axis.text=element_text(size=18),
+    axis.title=element_text(size=18))
 
 
 dev.off()

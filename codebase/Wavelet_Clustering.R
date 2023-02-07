@@ -54,8 +54,8 @@ input_data$Year <- NULL
 
 
 #Remove the sites with visible flow regulation. 
-site_info <- site_info[-c(11,12),]
-input_data <- input_data[,-c(11,12)]
+site_info <- site_info[-c(11,12,15),]
+input_data <- input_data[,-c(11,12,15)]
 
 
 
@@ -157,16 +157,16 @@ wavclust=function(Dat,coord,yrs){
     plt_dataset <- data.frame(PC = pc1,
                               Year = yrs,
                               Loess = lowess(yrs,pc1,f=1/9)$y)
-    if(i > 1) {
-      plt_dataset$PC <- -1*plt_dataset$PC
-      plt_dataset$Loess <- -1*plt_dataset$Loess
-    }
+    #if(i > 1) {
+    #  plt_dataset$PC <- -1*plt_dataset$PC
+    #  plt_dataset$Loess <- -1*plt_dataset$Loess
+    #}
     
     p1 <- ggplot(plt_dataset) +
       geom_line(aes(x = Year, y = Loess), size = 1.2, color ='red') +
       geom_point(aes(x = Year, y = PC), size = 0.1) +
       geom_line(aes(x = Year, y = PC), size = 0.1) +
-      scale_x_continuous(name = "Year") +
+      scale_x_continuous(name = "Year", limits = c(1934,2025)) +
       scale_y_continuous(name = "PC-Score") +
       labs(title = paste0("Cluster-",i," PC-1 Score")) + 
       theme_bw() +

@@ -55,8 +55,8 @@ input_data$Year <- NULL
 
 
 #Remove the sites with visible flow regulation. 
-site_info <- site_info[-c(11,12),]
-input_data <- input_data[,-c(11,12)]
+site_info <- site_info[-c(11,12,15),]
+input_data <- input_data[,-c(11,12,15)]
 
 #________________________________________________________________________________#
 ####Functions to compute the PC-Wavelets
@@ -130,7 +130,7 @@ PCwav=function(Dat,npcs,coords,yrs){
       geom_line(aes(x = Year, y = Loess), size = 1.2, color ='red') +
       geom_point(aes(x = Year, y = PC), size = 0.1) +
       geom_line(aes(x = Year, y = PC), size = 0.1) +
-      scale_x_continuous(name = "Year") +
+      scale_x_continuous(name = "Year", limits = c(1934,2025)) +
       scale_y_continuous(name = "PC-Score") +
       labs(title = paste0("PC-",i," Score")) + 
       theme_bw() +

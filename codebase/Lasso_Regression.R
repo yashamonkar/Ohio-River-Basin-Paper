@@ -42,8 +42,8 @@ Years <- input_data$Year
 input_data$Year <- NULL
 
 #Remove the sites with visible flow regulation. 
-site_info <- site_info[-c(11,12),]
-input_data <- input_data[,-c(11,12)]
+site_info <- site_info[-c(11,12,15),]
+input_data <- input_data[,-c(11,12,15)]
 
 
 
@@ -139,7 +139,9 @@ annual_temp <- annual_temp %>% filter(Year > 1934)
 ###----------------------------------LASSO REGRESSION-------------------------###
 
 #Create the PDF
-#pdf("figures/LASSO_Regression.pdf")
+pdf("figures/LASSO_Regression.pdf")
+
+par(mfrow=c(2,1), mar = c(4,4,6,2))
 
 #Create the dataset
 reg_data <- data.frame(PC1 = pc1,
@@ -157,6 +159,33 @@ reg_data <- data.frame(PC1 = pc1,
                        Temp = annual_temp$avg_temp)
 
 
+
+#_______________________________________________________________________________#
+#PC-1
+
+#Seperate the dependent and independent variables
+X = as.matrix(reg_data[,-c(1,2)])
+Y = scale(reg_data$PC1)
+
+
+###Fitting the LASSO Model
+fit <- glmnet(X, Y)
+#plot(fit, label = TRUE)
+#print(fit)
+
+###Cross-Validation
+cvfit <- cv.glmnet(X, Y)
+#plot(cvfit)
+#coef(cvfit, s = "lambda.min")
+plot(cvfit, xvar = "lambda", label = TRUE, main = "PC-1")
+
+
+
+
+
+#_______________________________________________________________________________#
+#PC-2
+
 #Seperate the dependent and independent variables
 X = as.matrix(reg_data[,-c(1,2)])
 Y = scale(reg_data$PC2)
@@ -165,14 +194,15 @@ Y = scale(reg_data$PC2)
 ###Fitting the LASSO Model
 fit <- glmnet(X, Y)
 #plot(fit, label = TRUE)
-print(fit)
-
+#print(fit)
 
 ###Cross-Validation
 cvfit <- cv.glmnet(X, Y)
-plot(cvfit)
-coef(cvfit, s = "lambda.min")
-plot(cvfit, xvar = "lambda", label = TRUE)
+#plot(cvfit)
+#coef(cvfit, s = "lambda.min")
+plot(cvfit, xvar = "lambda", label = TRUE, main = "PC-2")
 
-###Model Diagnostics using the best estimate
-#predict(cvfit, newx = X, s = "lambda.min")
+par(mfrow=c(1,1), mar = c(4,4,4,4))
+
+dev.off()
+
