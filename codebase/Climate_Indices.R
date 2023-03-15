@@ -201,8 +201,8 @@ get_clim_connections <- function(AM_Data, Climate_Index,
     scale_y_continuous(trans = reverselog_trans(2),
                        name = "Period (Years)") +
     theme_bw() +
-    theme(axis.text=element_text(size=10),
-          axis.title=element_text(size=10),
+    theme(axis.text=element_text(size=8),
+          axis.title=element_text(size=15),
           plot.title = element_text(size=15))
   
   #--------------------------------------------------------------------------------#

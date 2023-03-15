@@ -221,8 +221,8 @@ get_wavelet_coherence <- function(x,Fields){
     ggtitle(paste0("Wavelet Coherence ", Fields)) + 
     theme_bw()+
     theme(legend.position = 'none',
-          axis.text=element_text(size=10),
-          axis.title=element_text(size=10),
+          axis.text=element_text(size=8),
+          axis.title=element_text(size=15),
           plot.title = element_text(size=15)) 
   
   return(ps)

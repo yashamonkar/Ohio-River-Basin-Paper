@@ -245,7 +245,7 @@ wavclust=function(Dat,coord,yrs){
       scale_y_continuous(trans = reverselog_trans(2),
                          name = "Period (Years)") +
       theme_bw() +
-      theme(axis.text=element_text(size=12),
+      theme(axis.text=element_text(size=8),
             axis.title=element_text(size=15),
             plot.title = element_text(size=15))
     
