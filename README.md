@@ -1,7 +1,7 @@
 # Compound climate risk: Diagnosing clustered regional flooding at inter-annual and longer time scales
 
 This is the code repository for the paper "Compound climate risk: Diagnosing clustered regional flooding at inter-annual and longer time scales" by Yash Amonkar (Columbia), James Doss-Gollin (Rice University) and Upmanu Lall (Columbia). 
-This work has been submitted to the journal [Hydrology](https://www.mdpi.com/journal/hydrology) for consideration.
+This work has been published and can be accessed [here](https://doi.org/10.3390/hydrology10030067).
 
 All code to replicate the work done in the paper along with the supplementery materials is archived here.
 The scripts in `codebase/`, when run, replicate the entire study along with additional cases and plots for an extensive analysis.
