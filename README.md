@@ -6,6 +6,7 @@ This work has been published and can be accessed [here](https://doi.org/10.3390/
 All code to replicate the work done in the paper along with the supplementery materials is archived here.
 The scripts in `codebase/`, when run, replicate the entire study along with additional cases and plots for an extensive analysis.
 Most individual sub-routines are stored as functions in `functions/`.
+The entire repository along with data and other files are stored here - (TBD). 
  
 
 Abstract -  The potential for extreme climate events to cluster in space and time has driven increased interest in understanding and predicting compound climate risks. 
